@@ -1,35 +1,23 @@
 package com.example.flutter_ima_sdk_sample
 
-import androidx.annotation.NonNull
+import IMAPlayerApi
+import InitializeParam
+import InitializeResult
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 
-/** FlutterImaSdkSamplePlugin */
-class FlutterImaSdkSamplePlugin: FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel : MethodChannel
+class FlutterImaSdkSamplePlugin: FlutterPlugin, IMAPlayerApi {
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_ima_sdk_sample")
-    channel.setMethodCallHandler(this)
-  }
-
-  override fun onMethodCall(call: MethodCall, result: Result) {
-    if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    } else {
-      result.notImplemented()
-    }
+    IMAPlayerApi.setUp(flutterPluginBinding.binaryMessenger, this)
   }
 
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-    channel.setMethodCallHandler(null)
+    IMAPlayerApi.setUp(binding.binaryMessenger, null)
+  }
+
+  override fun initialize(param: InitializeParam): InitializeResult {
+    val version = android.os.Build.VERSION.RELEASE
+    return InitializeResult("${param.dummy}, $version")
   }
 }
